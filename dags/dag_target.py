@@ -11,7 +11,7 @@ from airflow.operators.bash import BashOperator
 
 @task
 def print_input(x):
-    sleep(5)
+    sleep(60)
     if random.choice(range(2)) == 1:
         raise Exception("random failure")
     print(x)

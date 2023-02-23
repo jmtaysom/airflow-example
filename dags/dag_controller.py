@@ -5,6 +5,7 @@ from airflow import DAG, XComArg
 from airflow.decorators import task
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.operators.python import get_current_context
+from airflow.sensors.external_task import ExternalTaskSensor
 
 
 @task
@@ -31,4 +32,28 @@ with DAG(
     schedule=None,
     tags=["example"],
 ) as dag:
+    external_task_sensor = ExternalTaskSensor(
+    task_id='external_task_sensor',
+    poke_interval=60,
+    timeout=5,
+    soft_fail=False,
+    retries=0,
+    failed_states=['queued'],
+    allowed_states=[
+        'failed',
+        'restarting',
+        'running', 
+        'scheduled',
+        'shutdown', 
+        'skipped', 
+        'success', 
+        'up_for_reschedule', 
+        'up_for_retry',
+    ],
+    external_task_id='print_input',
+    external_dag_id='target_dag',
+    dag=dag)
+
+
     run_this = run_this_func()
+    external_task_sensor >> run_this
