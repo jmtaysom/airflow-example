@@ -7,7 +7,6 @@ from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.operators.python import get_current_context
 
 
-
 @task
 def run_this_func(dag_run=None):
     """
@@ -15,16 +14,14 @@ def run_this_func(dag_run=None):
 
     :param dag_run: The DagRun object
     """
-    a = [1,2,3,4,5]
     context = get_current_context()
 
-    for i in a:
+    for i in range(10):
         TriggerDagRunOperator(
             task_id="trigger_dagrun",
             trigger_dag_id="target_dag",  # Ensure this equals the dag_id of the DAG to trigger,
-            conf={"message": i}
+            conf={"message": i},
         ).execute(context)
-
 
 
 with DAG(
@@ -34,5 +31,4 @@ with DAG(
     schedule=None,
     tags=["example"],
 ) as dag:
-
     run_this = run_this_func()
